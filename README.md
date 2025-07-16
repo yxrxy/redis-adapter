@@ -52,8 +52,10 @@ func main() {
 	// config := &redisadapter.Config{Network: "tcp", Address: "127.0.0.1:6379", Username: "user", Password: "pass"}
 	// a, _ := redisadapter.NewAdapter(config)
 
-	// With custom key
-	// config := &redisadapter.Config{Network: "tcp", Address: "127.0.0.1:6379", Key: "my_rules"}
+	// With TLS configuration
+	// var clientTLSConfig tls.Config
+	// ...
+	// config := &redisadapter.Config{Network: "tcp", Address: "127.0.0.1:6379", Username: "testAccount", Password: "123456", TLSConfig: &clientTLSConfig}
 	// a, _ := redisadapter.NewAdapter(config)
 
 	e, _ := casbin.NewEnforcer("examples/rbac_model.conf", a)
@@ -61,8 +63,12 @@ func main() {
 	// Load the policy from DB.
 	e.LoadPolicy()
 
-	// Check permissions
+	// Check the permission.
 	e.Enforce("alice", "data1", "read")
+
+	// Modify the policy.
+	// e.AddPolicy(...)
+	// e.RemovePolicy(...)
 
 	// Save the policy
 	e.SavePolicy()
