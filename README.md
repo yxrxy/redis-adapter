@@ -57,8 +57,14 @@ func main() {
 	// a, _ := redisadapter.NewAdapter(config)
 
 	e, _ := casbin.NewEnforcer("examples/rbac_model.conf", a)
+
+	// Load the policy from DB.
 	e.LoadPolicy()
+
+	// Check permissions
 	e.Enforce("alice", "data1", "read")
+
+	// Save the policy
 	e.SavePolicy()
 }
 ```
@@ -80,8 +86,14 @@ func main() {
 	a, _ := redisadapter.NewAdapter(config)
 
 	e, _ := casbin.NewEnforcer("examples/rbac_model.conf", a)
+	
+	// Load the policy from DB.
 	e.LoadPolicy()
+
+	// Check permissions
 	e.Enforce("alice", "data1", "read")
+
+	// Save the policy
 	e.SavePolicy()
 }
 ```
