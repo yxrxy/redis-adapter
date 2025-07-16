@@ -27,7 +27,9 @@ The `Config` struct supports the following options:
 - `TLSConfig` (*tls.Config): TLS configuration for secure connections (optional)
 - `Pool` (*redis.Pool): Existing Redis connection pool (optional, if provided, other connection options are ignored)
 
-## Simple Example
+## Usage Examples
+
+### Basic Usage
 
 ```go
 package main
@@ -38,58 +40,48 @@ import (
 )
 
 func main() {
-	// Recommended way: Using NewAdapter with Config
-	config := &redisadapter.Config{
-		Network: "tcp",
-		Address: "127.0.0.1:6379",
-	}
+	// Recommended approach using Config
+	config := &redisadapter.Config{Network: "tcp", Address: "127.0.0.1:6379"}
 	a, _ := redisadapter.NewAdapter(config)
 
-	// With password
-	// config := &redisadapter.Config{
-	//     Network:  "tcp",
-	//     Address:  "127.0.0.1:6379",
-	//     Password: "123",
-	// }
+	// With password authentication
+	// config := &redisadapter.Config{Network: "tcp", Address: "127.0.0.1:6379", Password: "123"}
 	// a, _ := redisadapter.NewAdapter(config)
 
 	// With user credentials
-	// config := &redisadapter.Config{
-	//     Network:  "tcp",
-	//     Address:  "127.0.0.1:6379",
-	//     Username: "username",
-	//     Password: "password",
-	// }
+	// config := &redisadapter.Config{Network: "tcp", Address: "127.0.0.1:6379", Username: "user", Password: "pass"}
 	// a, _ := redisadapter.NewAdapter(config)
 
 	// With custom key
-	// config := &redisadapter.Config{
-	//     Network: "tcp",
-	//     Address: "127.0.0.1:6379",
-	//     Key:     "my_rules",
-	// }
-	// a, _ := redisadapter.NewAdapter(config)
-
-	// With connection pool
-	// pool := &redis.Pool{}
-	// config := &redisadapter.Config{
-	//     Pool: pool,
-	// }
+	// config := &redisadapter.Config{Network: "tcp", Address: "127.0.0.1:6379", Key: "my_rules"}
 	// a, _ := redisadapter.NewAdapter(config)
 
 	e, _ := casbin.NewEnforcer("examples/rbac_model.conf", a)
-
-	// Load the policy from DB.
 	e.LoadPolicy()
-
-	// Check the permission.
 	e.Enforce("alice", "data1", "read")
+	e.SavePolicy()
+}
+```
 
-	// Modify the policy.
-	// e.AddPolicy(...)
-	// e.RemovePolicy(...)
+### With Connection Pool
 
-	// Save the policy back to DB.
+```go
+package main
+
+import (
+	"github.com/casbin/casbin/v2"
+	"github.com/casbin/redis-adapter/v3"
+	"github.com/gomodule/redigo/redis"
+)
+
+func main() {
+	pool := &redis.Pool{Dial: func() (redis.Conn, error) { return redis.Dial("tcp", "127.0.0.1:6379") }}
+	config := &redisadapter.Config{Pool: pool, Key: "casbin_rules"}
+	a, _ := redisadapter.NewAdapter(config)
+
+	e, _ := casbin.NewEnforcer("examples/rbac_model.conf", a)
+	e.LoadPolicy()
+	e.Enforce("alice", "data1", "read")
 	e.SavePolicy()
 }
 ```
