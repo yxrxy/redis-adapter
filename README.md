@@ -70,7 +70,7 @@ func main() {
 	// e.AddPolicy(...)
 	// e.RemovePolicy(...)
 
-	// Save the policy
+	// Save the policy back to DB.
 	e.SavePolicy()
 }
 ```
@@ -96,10 +96,10 @@ func main() {
 	// Load the policy from DB.
 	e.LoadPolicy()
 
-	// Check permissions
+	// Check the permission.
 	e.Enforce("alice", "data1", "read")
 
-	// Save the policy
+	// Save the policy back to DB.
 	e.SavePolicy()
 }
 ```
