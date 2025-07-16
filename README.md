@@ -26,28 +26,29 @@ import (
 )
 
 func main() {
-	// Direct Initialization:
-	// Initialize a Redis adapter and use it in a Casbin enforcer:
-	a, _ := redisadapter.NewAdapter("tcp", "127.0.0.1:6379") // Your Redis network and address.
+	// Basic initialization (deprecated)
+	a, _ := redisadapter.NewAdapterBasic("tcp", "127.0.0.1:6379")
 
-	// Use the following if Redis has password like "123"
+	// With password (deprecated)
 	// a, err := redisadapter.NewAdapterWithPassword("tcp", "127.0.0.1:6379", "123")
 
-	// Use the following if you use Redis with a specific user 
+	// With user credentials (deprecated)
 	// a, err := redisadapter.NewAdapterWithUser("tcp", "127.0.0.1:6379", "username", "password")
 
-	// Use the following if you use Redis connections pool
+	// With custom key (deprecated)
+	// a, err := redisadapter.NewAdapterWithKey("tcp", "127.0.0.1:6379", "my_rules")
+
+	// With connection pool (deprecated)
 	// pool := &redis.Pool{}
 	// a, err := redisadapter.NewAdapterWithPool(pool)
 
-	// Initialization with different user options:
-	// Use the following if you use Redis with passowrd like "123":
-	// a, err := redisadapter.NewAdapterWithOption(redisadapter.WithNetwork("tcp"), redisadapter.WithAddress("127.0.0.1:6379"), redisadapter.WithPassword("123"))
-
-	// Use the following if you use Redis with username, password, and TLS option:
-	// var clientTLSConfig tls.Config
-	// ...
-	// a, err := redisadapter.NewAdapterWithOption(redisadapter.WithNetwork("tcp"), redisadapter.WithAddress("127.0.0.1:6379"), redisadapter.WithUsername("testAccount"), redisadapter.WithPassword("123456"), redisadapter.WithTls(&clientTLSConfig))
+	// With options pattern (deprecated)
+	// a, err := redisadapter.NewAdapterWithOption(
+	//     redisadapter.WithNetwork("tcp"),
+	//     redisadapter.WithAddress("127.0.0.1:6379"),
+	//     redisadapter.WithPassword("123"),
+	//     redisadapter.WithKey("my_rules"),
+	// )
 
 	e, _ := casbin.NewEnforcer("examples/rbac_model.conf", a)
 
@@ -65,6 +66,18 @@ func main() {
 	e.SavePolicy()
 }
 ```
+
+## Configuration Options
+
+The `Config` struct supports the following options:
+
+- `Network` (string): Network type, e.g., "tcp", "unix" (required when not using Pool)
+- `Address` (string): Redis server address, e.g., "127.0.0.1:6379" (required when not using Pool)
+- `Key` (string): Redis key to store Casbin rules (default: "casbin_rules")
+- `Username` (string): Username for Redis authentication (optional)
+- `Password` (string): Password for Redis authentication (optional)
+- `TLSConfig` (*tls.Config): TLS configuration for secure connections (optional)
+- `Pool` (*redis.Pool): Existing Redis connection pool (optional, if provided, other connection options are ignored)
 
 ## Getting Help
 
